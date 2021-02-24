@@ -1,0 +1,24 @@
+-- Fix TAILNUM, remove junk characters
+SELECT TAILNUM, SUBSTRING(TAILNUM FROM '[a-zA-Z0-9]+') AS TAILNUMCLEAN 
+FROM FLIGHTS WHERE TRANSACTIONID = 51089200;
+
+-- Make CANCELLED and DIVERTED streamlined with ‘false’ or ‘true’ values, making it boolean.
+UPDATE flights
+SET cancelled = CASE WHEN LOWER(cancelled) IN ('f', '0', 'false') THEN false ELSE true END,
+    diverted  = CASE WHEN LOWER(cancelled) IN ('f', '0', 'false') THEN false ELSE true END;
+
+ALTER TABLE flights
+ALTER COLUMN cancelled TYPE BOOLEAN USING cancelled::boolean,
+ALTER COLUMN diverted TYPE BOOLEAN USING diverted::boolean;
+
+-- Remove redundant AIRLINECODE from AIRLINENAME
+SELECT AIRLINENAME, SUBSTRING(AIRLINENAME FROM '.*(?=\:)')
+FROM FLIGHTS LIMIT 100;
+
+-- Remove redundant ORIGINCITYNAME and ORIGINSTATE from ORIGAIRPORTNAME
+SELECT ORIGAIRPORTNAME, SUBSTRING(ORIGAIRPORTNAME FROM '(?<=\: ).*')
+FROM FLIGHTS LIMIT 10;
+
+-- Remove redundant DESTCITYNAME and DESTSTATE from DESTAIRPORTNAME
+SELECT DESTAIRPORTNAME, SUBSTRING(DESTAIRPORTNAME FROM '(?<=\: ).*')
+FROM FLIGHTS LIMIT 10;
