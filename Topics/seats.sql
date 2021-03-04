@@ -1,0 +1,1 @@
+SELECT * FROM seats LIMIT 7;
